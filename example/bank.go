@@ -5,26 +5,26 @@ import (
 	"sync"
 )
 
-type Bank struct {
+type Account struct {
 	balance int64
 	sync.Mutex
 }
 
-func (b *Bank) Deposit(amount int64) {
-	b.Lock()
-	b.balance += amount
-	b.Unlock()
+func (a *Account) Deposit(amount int64) {
+	a.Lock()
+	a.balance += amount
+	a.Unlock()
 }
 
-func (b *Bank) Withdraw(amount int64) error {
-	b.Lock()
-	defer b.Unlock()
+func (a *Account) Withdraw(amount int64) error {
+	a.Lock()
+	defer a.Unlock()
 
-	newBalance := b.balance - amount
+	newBalance := a.balance - amount
 	if newBalance < 0 {
 		return fmt.Errorf("funds insufficient")
 	}
 
-	b.balance = newBalance
+	a.balance = newBalance
 	return nil
 }
