@@ -28,3 +28,9 @@ func (a *Account) Withdraw(amount int64) error {
 	a.balance = newBalance
 	return nil
 }
+
+func transfer_no_tx(from, to *Account, amount int64) {
+
+}
+
+func main() {}
