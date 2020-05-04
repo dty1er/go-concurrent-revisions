@@ -1,4 +1,4 @@
-package go-concurrent-revisions
+package conrev
 
 type Version int
 
