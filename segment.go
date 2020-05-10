@@ -4,7 +4,7 @@ var vercount int
 
 type Segment struct {
 	Parent  *Segment
-	Written []Releaser
+	Written []Versioned
 	Version int
 
 	refcount int
@@ -39,5 +39,14 @@ func (s *Segment) Release() {
 	}
 	if s.Parent != nil {
 		s.Parent.Release()
+	}
+}
+
+func (s *Segment) Collapse(main *Revision) {
+	for s.Parent != nil && s.Parent != main.Root && s.Parent.refcount == 1 {
+		for _, w := range s.Written {
+			w.Collapse(main, s.Parent)
+		}
+		s.Parent = s.Parent.Parent
 	}
 }
