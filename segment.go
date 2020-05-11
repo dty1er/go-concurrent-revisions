@@ -1,6 +1,6 @@
 package conrev
 
-var vercount int
+var versionCount AtomicInt
 
 type Segment struct {
 	Parent  *Segment
@@ -15,11 +15,12 @@ func NewSegmentWithParent(parent *Segment) *Segment {
 		parent.refcount++
 	}
 
-	vercount++
+	v := versionCount.Get()
+	versionCount.Incr()
 
 	return &Segment{
 		Parent:   parent,
-		Version:  vercount,
+		Version:  v,
 		refcount: 1,
 	}
 }
