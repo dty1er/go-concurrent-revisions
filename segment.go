@@ -5,7 +5,7 @@ var versionCount AtomicInt
 type Segment struct {
 	Parent  *Segment
 	Written []Versioned
-	Version int
+	Version int64
 
 	refcount int
 }
