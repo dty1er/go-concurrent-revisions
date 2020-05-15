@@ -1,20 +1,30 @@
 package conrev
 
+var currentRev *Revision
+
 type Revision struct {
-	Root       *Segment
-	CurrentRev *Segment
+	Root    *Segment
+	Current *Segment
 
 	done chan struct{}
 }
 
 func NewRevision(root, current *Segment) *Revision {
-	return &Revision{Root: root, CurrentRev: current}
+	return &Revision{Root: root, Current: current}
 }
 
 func (r *Revision) Fork(a Action) {
-	nr := NewRevision(r.Root, NewSegmentWithParent(r.CurrentRev))
-	r.CurrentRev.Release()
-	r.CurrentRev = NewSegmentWithParent(r.CurrentRev)
+	nr := NewRevision(r.Root, NewSegmentWithParent(r.Current))
+	r.Current.Release()
+	r.Current = NewSegmentWithParent(r.Current)
+
+	go r.runAction(a, nr)
 }
 
-// run action, wait it
+func (r *Revision) runAction(a Action, newRevision *Revision) {
+	prev := currentRev
+	currentRev = newRevision
+	a.Do()
+	currentRev = prev
+	r.done <- struct{}{}
+}
