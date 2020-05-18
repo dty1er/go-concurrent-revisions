@@ -26,5 +26,20 @@ func (r *Revision) runAction(a Action, newRevision *Revision) {
 	currentRev = newRevision
 	a.Do()
 	currentRev = prev
-	r.done <- struct{}{}
+	close(r.done)
+}
+
+func (r *Revision) Join(join *Revision) {
+	<-r.done // TODO: timeout should be set?
+
+	s := join.Current
+	for s != join.Root {
+		for _, w := range s.Written {
+			w.Merge(r, join, s)
+		}
+		s = s.Parent
+	}
+
+	join.Current.Release()
+	r.Current.Collapse(r)
 }
