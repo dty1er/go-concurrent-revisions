@@ -3,14 +3,14 @@ package conrev
 var versionCount AtomicInt
 
 type Segment struct {
-	Parent  *Segment
-	Written []Versioned
-	Version int64
+	parent  *Segment
+	written []Versioned
+	version int64
 
 	refcount int
 }
 
-func NewSegmentWithParent(parent *Segment) *Segment {
+func newSegmentWithParent(parent *Segment) *Segment {
 	if parent != nil {
 		parent.refcount++
 	}
@@ -19,14 +19,14 @@ func NewSegmentWithParent(parent *Segment) *Segment {
 	versionCount.Incr()
 
 	return &Segment{
-		Parent:   parent,
-		Version:  v,
+		parent:   parent,
+		version:  v,
 		refcount: 1,
 	}
 }
 
-func NewSegment() *Segment {
-	return NewSegmentWithParent(nil)
+func newSegment() *Segment {
+	return newSegmentWithParent(nil)
 }
 
 func (s *Segment) Release() {
@@ -35,19 +35,19 @@ func (s *Segment) Release() {
 		return
 	}
 
-	for _, w := range s.Written {
+	for _, w := range s.written {
 		w.Release(s)
 	}
-	if s.Parent != nil {
-		s.Parent.Release()
+	if s.parent != nil {
+		s.parent.Release()
 	}
 }
 
 func (s *Segment) Collapse(main *Revision) {
-	for s.Parent != nil && s.Parent != main.Root && s.Parent.refcount == 1 {
-		for _, w := range s.Written {
-			w.Collapse(main, s.Parent)
+	for s.parent != nil && s.parent != main.root && s.parent.refcount == 1 {
+		for _, w := range s.written {
+			w.Collapse(main, s.parent)
 		}
-		s.Parent = s.Parent.Parent
+		s.parent = s.parent.parent
 	}
 }

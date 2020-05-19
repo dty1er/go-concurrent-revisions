@@ -3,20 +3,25 @@ package conrev
 var currentRev *Revision
 
 type Revision struct {
-	Root    *Segment
-	Current *Segment
+	root    *Segment
+	current *Segment
 
 	done chan struct{}
 }
 
-func NewRevision(root, current *Segment) *Revision {
-	return &Revision{Root: root, Current: current}
+func newRevision(root, current *Segment) *Revision {
+	return &Revision{root: root, current: current}
 }
 
-func (r *Revision) Fork(a Action) {
-	nr := NewRevision(r.Root, NewSegmentWithParent(r.Current))
-	r.Current.Release()
-	r.Current = NewSegmentWithParent(r.Current)
+func (r *Revision) fork(a Action) {
+	if currentRev == nil {
+		root := newSegment()
+		currentRev = newRevision(root, root)
+	}
+
+	nr := newRevision(r.root, newSegmentWithParent(r.current))
+	r.current.Release()
+	r.current = newSegmentWithParent(r.current)
 
 	go r.runAction(a, nr)
 }
@@ -29,17 +34,17 @@ func (r *Revision) runAction(a Action, newRevision *Revision) {
 	close(r.done)
 }
 
-func (r *Revision) Join(join *Revision) {
+func (r *Revision) join(join *Revision) {
 	<-r.done // TODO: timeout should be set?
 
-	s := join.Current
-	for s != join.Root {
-		for _, w := range s.Written {
+	s := join.current
+	for s != join.root {
+		for _, w := range s.written {
 			w.Merge(r, join, s)
 		}
-		s = s.Parent
+		s = s.parent
 	}
 
-	join.Current.Release()
-	r.Current.Collapse(r)
+	join.current.Release()
+	r.current.Collapse(r)
 }
