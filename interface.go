@@ -9,6 +9,6 @@ func Fork(action Action) *Revision {
 	return currentRev.fork(action)
 }
 
-func Join(rev *Revision) {
-
+func Join(join *Revision) {
+	currentRev.join(join)
 }
