@@ -10,6 +10,10 @@ type Versioned struct {
 	versions *sync.Map
 }
 
+func (ve *Versioned) Release(s *Segment) {
+	ve.versions.Delete(s.version)
+}
+
 func (ve *Versioned) get(r *Revision) interface{} {
 	s := r.current
 	for {
