@@ -14,6 +14,16 @@ func (ve *Versioned) Release(s *Segment) {
 	ve.versions.Delete(s.version)
 }
 
+func (ve *Versioned) Collapse(main *Revision, parent *Segment) {
+	_, ok := ve.versions.Load(main.current.version)
+	if !ok {
+		// if !ok, want to store nil so ok to ignore ok
+		p, _ := ve.versions.Load(parent.version)
+		ve.set(main, p)
+	}
+	ve.versions.Delete(parent.version)
+}
+
 func (ve *Versioned) get(r *Revision) interface{} {
 	s := r.current
 	for {
