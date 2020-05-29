@@ -39,7 +39,7 @@ func (ve *Versioned) set(r *Revision, val interface{}) {
 	s := r.current
 	_, ok := ve.versions.Load(s.version)
 	if !ok {
-		r.current.written = append(r.current.written, ve)
+		r.current.written = append(s.written, ve)
 	}
-	ve.versions.Store(r.current.version, val)
+	ve.versions.Store(s.version, val)
 }
