@@ -24,6 +24,23 @@ func (ve *Versioned) Collapse(main *Revision, parent *Segment) {
 	ve.versions.Delete(parent.version)
 }
 
+func (ve *Versioned) Merge(main *Revision, joinRev *Revision, joinSeg *Segment) {
+	s := joinRev.current
+	for {
+		_, ok := ve.versions.Load(s.version)
+		if ok {
+			break
+		}
+
+		s = s.parent
+	}
+
+	if s == joinSeg {
+		p, _ := ve.versions.Load(joinSeg.version)
+		ve.set(main, p)
+	}
+}
+
 func (ve *Versioned) get(r *Revision) interface{} {
 	s := r.current
 	for {
