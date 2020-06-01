@@ -17,7 +17,7 @@ func (ve *Versioned) Release(s *Segment) {
 func (ve *Versioned) Collapse(main *Revision, parent *Segment) {
 	_, ok := ve.versions.Load(main.current.version)
 	if !ok {
-		// if !ok, want to store nil so ok to ignore ok
+		// if !ok, want to store nil
 		p, _ := ve.versions.Load(parent.version)
 		ve.set(main, p)
 	}
