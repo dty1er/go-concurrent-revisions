@@ -41,8 +41,7 @@ func (ve *Versioned) Merge(main *Revision, joinRev *Revision, joinSeg *Segment) 
 	}
 }
 
-func (ve *Versioned) get(r *Revision) interface{} {
-	s := r.current
+func (ve *Versioned) get(s *Segment) interface{} {
 	for {
 		v, ok := ve.versions.Load(s.version)
 		if ok {
