@@ -36,8 +36,7 @@ func (ve *Versioned) Merge(main *Revision, joinRev *Revision, joinSeg *Segment) 
 	}
 
 	if s == joinSeg {
-		p, _ := ve.versions.Load(joinSeg.version)
-		ve.set(main, p)
+		ve.set(main, config.cumulativeFunc(ve.get(currentRev.current), ve.get(joinSeg), ve.get(joinRev.root)))
 	}
 }
 
