@@ -1,6 +1,6 @@
 package conrev
 
-func Fork(action Action, opts ...Option) *Revision {
+func Fork(action func(), opts ...Option) *Revision {
 	for _, opt := range opts {
 		opt(config)
 	}

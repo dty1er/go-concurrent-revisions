@@ -13,19 +13,19 @@ func newRevision(root, current *Segment) *Revision {
 	return &Revision{root: root, current: current}
 }
 
-func (r *Revision) fork(a Action) *Revision {
+func (r *Revision) fork(action func()) *Revision {
 	nr := newRevision(r.root, newSegmentWithParent(r.current))
 	r.current.Release()
 	r.current = newSegmentWithParent(r.current)
 
-	go r.runAction(a, nr)
+	go r.runAction(action, nr)
 	return nr
 }
 
-func (r *Revision) runAction(a Action, newRevision *Revision) {
+func (r *Revision) runAction(action func(), newRevision *Revision) {
 	prev := currentRev
 	currentRev = newRevision
-	a.Do()
+	action()
 	currentRev = prev
 	close(r.done)
 }
