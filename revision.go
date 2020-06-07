@@ -10,7 +10,7 @@ type Revision struct {
 }
 
 func newRevision(root, current *Segment) *Revision {
-	return &Revision{root: root, current: current}
+	return &Revision{root: root, current: current, done: make(chan struct{}, 1)}
 }
 
 func (r *Revision) fork(action func()) *Revision {
