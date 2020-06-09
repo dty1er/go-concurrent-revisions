@@ -14,7 +14,7 @@ func newRevision(root, current *Segment) *Revision {
 }
 
 func (r *Revision) fork(action func()) *Revision {
-	nr := newRevision(r.root, newSegmentWithParent(r.current))
+	nr := newRevision(r.current, newSegmentWithParent(r.current))
 	r.current.Release()
 	r.current = newSegmentWithParent(r.current)
 
