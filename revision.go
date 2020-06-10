@@ -18,7 +18,7 @@ func (r *Revision) fork(action func()) *Revision {
 	r.current.Release()
 	r.current = newSegmentWithParent(r.current)
 
-	go r.runAction(action, nr)
+	go nr.runAction(action, nr)
 	return nr
 }
 
@@ -27,11 +27,11 @@ func (r *Revision) runAction(action func(), newRevision *Revision) {
 	currentRev = newRevision
 	action()
 	currentRev = prev
-	close(r.done)
+	r.done <- struct{}{}
 }
 
 func (r *Revision) join(join *Revision) {
-	<-r.done // TODO: timeout should be set?
+	<-join.done // TODO: timeout should be set?
 
 	s := join.current
 	for s != join.root {
