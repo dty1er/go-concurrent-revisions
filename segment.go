@@ -44,7 +44,7 @@ func (s *Segment) Release() {
 }
 
 func (s *Segment) Collapse(main *Revision) {
-	for s.parent != nil && s.parent != main.root && s.parent.refcount == 1 {
+	for s.parent != nil && (s.parent != main.root && s.parent.refcount == 1) {
 		for _, w := range s.written {
 			w.Collapse(main, s.parent)
 		}
