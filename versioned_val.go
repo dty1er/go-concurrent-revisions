@@ -5,10 +5,6 @@ import (
 )
 
 type VersionedVal struct {
-	Releaser
-	Collapser
-	Merger
-
 	versions *sync.Map
 }
 
